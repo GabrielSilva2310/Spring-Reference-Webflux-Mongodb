@@ -2,7 +2,6 @@ package com.devsuperior.workshopmongo.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.workshopmongo.dto.UserDTO;
 import com.devsuperior.workshopmongo.entities.User;
@@ -35,16 +34,20 @@ public class UserService {
 		Mono<UserDTO> result = repository.save(entity).map(user -> (new UserDTO(user)));
 		return result;
 	}
-	/*
-	@Transactional
-	public UserDTO update(String id, UserDTO dto) {
-		User entity = repository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado"));
-		copyDtoToEntity(dto, entity);
-		entity = repository.save(entity);
-		return new UserDTO(entity);
+	
+	public Mono<UserDTO> update(String id, UserDTO dto) {
+		return repository.findById(id)
+				.flatMap(existingUser -> {
+					existingUser.setName(dto.getName());
+					existingUser.setEmail(dto.getEmail());
+					return repository.save(existingUser);
+				})
+				.map(user -> (new UserDTO(user)))
+				.switchIfEmpty(Mono.error(new ResourceNotFoundException("Recurso não encontrado!")));
+				
 	}
-
+	
+	/*
 	@Transactional
 	public void delete(String id) {
 		User entity = repository.findById(id)
