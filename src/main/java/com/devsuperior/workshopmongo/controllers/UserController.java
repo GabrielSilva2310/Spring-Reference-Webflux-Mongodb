@@ -2,6 +2,7 @@ package com.devsuperior.workshopmongo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,11 +48,10 @@ public class UserController {
 		return service.update(id, dto).map(updateUser -> ResponseEntity.ok().body(updateUser));
 		
 	}
-	/*
+	
 	@DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<Void>> delete(@PathVariable String id) {
+        return service.delete(id).then(Mono.just(ResponseEntity.noContent().<Void>build()));
     }
-    */
+  
 }
