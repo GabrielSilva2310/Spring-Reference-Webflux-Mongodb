@@ -1,9 +1,6 @@
 package com.devsuperior.workshopmongo.controllers;
 
 import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.time.Instant;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +14,7 @@ import com.devsuperior.workshopmongo.controllers.util.URL;
 import com.devsuperior.workshopmongo.dto.PostDTO;
 import com.devsuperior.workshopmongo.services.PostService;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -30,14 +28,13 @@ public class PostController {
 	public Mono<ResponseEntity<PostDTO>> findById(@PathVariable String id) {
 		return service.findById(id).map(postDTO -> ResponseEntity.ok().body(postDTO));
 	}
-	/*
-	@GetMapping(value = "/titlesearch")
-	public ResponseEntity<List<PostDTO>> findByTitle(@RequestParam(value = "text", defaultValue = "") String text) throws UnsupportedEncodingException {
-		text = URL.decodeParam(text);
-		List<PostDTO> list = service.findByTitle(text);
-		return ResponseEntity.ok(list);
-	}
 	
+	@GetMapping(value = "/titlesearch")
+	public Flux<PostDTO> findByTitle(@RequestParam(value = "text", defaultValue = "") String text) throws UnsupportedEncodingException {
+		text = URL.decodeParam(text);
+		return service.findByTitle(text);
+	}
+	/*
 	@GetMapping(value = "/fullsearch")
 	public ResponseEntity<List<PostDTO>> fullSearch(
 			@RequestParam(value = "text", defaultValue = "") String text,
